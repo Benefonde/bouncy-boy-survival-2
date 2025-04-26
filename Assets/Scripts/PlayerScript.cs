@@ -9,7 +9,7 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1;
-        mouseSensitivity = PlayerPrefs.GetFloat("sensitivity");
+        mouseSensitivity = (PlayerPrefs.GetFloat("sensitivity") + 5) / 10;
         if (mouseSensitivity == 0)
         { 
             mouseSensitivity = 2;
@@ -46,26 +46,34 @@ public class PlayerScript : MonoBehaviour
             died.SetActive(true);
         }
         HudUpdates();
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && attackCooldown <= 0)
         {
             Attack();
+            attackCooldown = 0.5f;
+        }
+        if (attackCooldown > 0)
+        {
+            attackCooldown -= Time.deltaTime;
         }
     }
 
     void CameraMovement()
     {
-        mouseRotation = new Vector2(Input.GetAxis("Mouse Y"), -Input.GetAxis("Mouse X"));
-        cameraRotation += -mouseRotation * mouseSensitivity;
-        cam.transform.rotation = Quaternion.Euler(cameraRotation);
-        cam.transform.position = transform.position + cameraOffset;
+        if (Time.timeScale != 0)
+        {
+            mouseRotation = new Vector2(Input.GetAxis("Mouse Y"), -Input.GetAxis("Mouse X"));
+            cameraRotation += -mouseRotation * mouseSensitivity;
+            cam.transform.rotation = Quaternion.Euler(cameraRotation);
+            cam.transform.position = transform.position + cameraOffset;
+        }
     }
 
     void PlayerMovement()
     {
         speed = mainSpeed;
         transform.rotation = Quaternion.Euler(new Vector3(0, cameraRotation.y, 0));
-        Vector3 x = transform.right * Input.GetAxis("Horizontal");
-        Vector3 y = transform.forward * Input.GetAxis("Vertical");
+        Vector3 x = transform.right * Input.GetAxisRaw("Horizontal");
+        Vector3 y = transform.forward * Input.GetAxisRaw("Vertical");
         if (Input.GetKeyDown(KeyCode.Space) && !jump)
         {
             transform.position += new Vector3(0, 5, 0);
@@ -74,7 +82,7 @@ public class PlayerScript : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            speed = mainSpeed * 1.25f;
+            speed = mainSpeed * 1.35f;
         }
         speed *= Mathf.Clamp(hp / maxHp, 0.65f, 1);
         cc.Move((x + y).normalized * Time.deltaTime * speed);
@@ -110,14 +118,14 @@ public class PlayerScript : MonoBehaviour
             case 0.75f: healthImage.sprite = healthSprites[1]; break;
             case 1: healthImage.sprite = healthSprites[0]; break;
         }
+        weaponSprite.sprite = weapon.sprite;
+        weaponDamageTxt.text = (weapon.damage + weaponDamageBonus).ToString();
     }
 
     void GetNewWeapon(Weapon weaponCollect)
     {
         weapon = weaponCollect;
-        weaponSprite.sprite = weapon.sprite;
-        weaponDamageTxt.text = weapon.damage.ToString();
-        durability = weapon.durability;
+        durability = weapon.durability + weaponDurabilityBonus;
     }
 
     void Attack()
@@ -130,7 +138,7 @@ public class PlayerScript : MonoBehaviour
             if (Physics.Raycast(transform.position, transform.forward, out hit, weapon.range, mask))
             {
                 print("i hit him dhar mann");
-                hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage);
+                hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage + weaponDamageBonus);
                 if (weapon.name != "Nothing")
                 {
                     durability--;
@@ -148,7 +156,12 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            // projectile!! RELEASE!!!!!!!!!!!!!!!!!!!!!!!
+            Instantiate(projectiles[weapon.projectile]);
+            durability--;
+            if (durability <= 0)
+            {
+                GetNewWeapon(validWeapons[0]);
+            }
         }
     }
 
@@ -195,5 +208,12 @@ public class PlayerScript : MonoBehaviour
     [SerializeField]
     int durability;
 
+    public GameObject[] projectiles;
+
     public Weapon[] validWeapons;
+
+    float attackCooldown;
+
+    public int weaponDamageBonus;
+    public int weaponDurabilityBonus;
 }

@@ -25,7 +25,7 @@ public class WaveScript : MonoBehaviour
                 return;
             }
             wave++;
-            enemies += 2;
+            enemies += Mathf.RoundToInt(2 + (wave / 4));
             NewWave();
         }
         else
@@ -36,6 +36,17 @@ public class WaveScript : MonoBehaviour
 
     void NewWave()
     {
+        if (wave != 1)
+        {
+            switch (Mathf.RoundToInt(Random.Range(1, 5.5f)))
+            {
+                case 1: player.maxHp++; break;
+                case 2: player.mainSpeed++; break;
+                case 3: player.regen += 0.2f; break;
+                case 4: player.weaponDamageBonus++; break;
+                case 5: player.weaponDurabilityBonus += 2; break;
+            }
+        }
         waveTxt.text = $"Wave {wave}";
         for (int i = 0; i < enemies; i++)
         {
@@ -53,4 +64,6 @@ public class WaveScript : MonoBehaviour
     public Slider enemySlider;
 
     bool waveInProgress;
+
+    public PlayerScript player;
 }

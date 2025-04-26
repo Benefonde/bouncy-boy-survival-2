@@ -10,7 +10,7 @@ public class MenuScript : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        sensitivity.value = (PlayerPrefs.GetFloat("sensitivity", 0.8f) + 5) * 10;
+        sensitivity.value = PlayerPrefs.GetFloat("sensitivity", 10f);
     }
 
     public void Bye()
@@ -25,7 +25,7 @@ public class MenuScript : MonoBehaviour
 
     public void SetSensitivity()
     {
-        PlayerPrefs.SetFloat("sensitivity", (sensitivity.value + 5) / 10);
+        PlayerPrefs.SetFloat("sensitivity", (sensitivity.value));
     }
     
     public void ToggleFullscreen()
