@@ -9,6 +9,10 @@ public class PauseMenu : MonoBehaviour
         {
             PauseToggle();
         }
+        if (!pause.activeSelf && Cursor.lockState == CursorLockMode.None)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
     }
 
     public void PauseToggle()

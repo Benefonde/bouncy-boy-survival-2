@@ -8,7 +8,9 @@ public class EnemyProjectileSpawner : MonoBehaviour
     {
         if (timer <= 0)
         {
-            Instantiate(projectile, transform.position, transform.rotation);
+            GameObject a = Instantiate(projectile, transform.position, Quaternion.identity);
+            a.SetActive(true);
+            a.transform.LookAt(player);
             timer = timmer;
         }
         else
@@ -20,4 +22,5 @@ public class EnemyProjectileSpawner : MonoBehaviour
     public GameObject projectile;
     public float timmer;
     float timer;
+    public Transform player;
 }

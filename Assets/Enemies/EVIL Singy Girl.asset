@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 204e33829867e2e439bbd2976600c078, type: 3}
-  m_Name: EVIL Painty Girl
+  m_Name: EVIL Singy Girl
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300000, guid: e87bd6e75d7e095449f829ab16e68605, type: 3}
-  enemyName: Grayscaled Painty Girl
+  sprite: {fileID: 21300000, guid: aadff65595a7998429ac329af0f59525, type: 3}
+  enemyName: Grayscaled Singy Girl
   health: 20
   regen: 0.125
   speed: 5
   damage: 1
   enemySpecificGameObjectId: 1
-  chanceOfDrop: 1
-  weaponDrop: {fileID: 0}
+  chanceOfDrop: 10
+  weaponDrop: {fileID: 11400000, guid: 615b5b6a48548164e8fc4f977d4081f2, type: 2}

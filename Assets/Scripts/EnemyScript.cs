@@ -12,24 +12,32 @@ public class EnemyScript : MonoBehaviour
         if (spawnedByWave)
         {
             agent.Warp(new Vector3(Random.Range(-135, 135), 5, Random.Range(-135, 135))); // hoping this drops the enemy down to floor height
-            if (ws.wave > 3)
+            if (ws.wave > 2)
             {
                 int rng = Random.Range(1, 31);
-                if (rng < 11)
+                if (rng < 31)
                 {
-                    enemy = validEnemies[0]; // spiky
+                    enemy = validEnemies[5];
                 }
-                if (rng > 11 && rng < 16)
+                if (rng < 30)
                 {
-                    enemy = validEnemies[rng - 11]; // random enemies
+                    enemy = validEnemies[4];
                 }
-                if (rng >= 16 && rng < 26)
+                if (rng < 25)
                 {
-                    enemy = validEnemies[Random.Range(0, validEnemies.Length)]; // same as before
+                    enemy = validEnemies[3];
                 }
-                if (rng > 26)
+                if (rng < 21)
                 {
-                    enemy = validEnemies[rng - 25];
+                    enemy = validEnemies[2];
+                }
+                if (rng < 16)
+                {
+                    enemy = validEnemies[1];
+                }
+                if (rng < 10)
+                {
+                    enemy = validEnemies[0];
                 }
             }
         }
@@ -40,7 +48,7 @@ public class EnemyScript : MonoBehaviour
         chance = enemy.chanceOfDrop;
         if (enemy.enemySpecificGameObjectId != -1)
         {
-            Instantiate(specificGO[enemy.enemySpecificGameObjectId], transform);
+            Instantiate(specificGO[enemy.enemySpecificGameObjectId], transform).SetActive(true);
         }
     }
 
@@ -67,6 +75,10 @@ public class EnemyScript : MonoBehaviour
             agent.enabled = true;
             agent.SetDestination(player.position);
         }
+        if (Vector3.Distance(player.position, transform.position) <= 10 && player.GetComponent<PlayerScript>().singing)
+        {
+            health -= 5 * Time.deltaTime;
+        }
     }
 
     public Transform player;
@@ -74,7 +86,7 @@ public class EnemyScript : MonoBehaviour
 
     public EnemyScriptable enemy;
 
-    public int health;
+    public float health;
     public float damage;
     SpriteRenderer sr;
 

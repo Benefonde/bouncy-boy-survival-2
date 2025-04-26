@@ -6,23 +6,35 @@ public class ProjectileScript : MonoBehaviour
 {
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        if (rb.useGravity)
+        if (!singing)
         {
-            rb.AddForce(transform.up * speed * 15 * (Camera.main.transform.rotation.x));
+            originalRot = transform.rotation.eulerAngles;
+            rb = GetComponent<Rigidbody>();
+            if (rb.useGravity)
+            {
+                rb.AddForce(transform.up * speed * 15);
+            }
         }
     }
 
     void Update()
     {
-        if (rb.useGravity)
+        if (!singing)
         {
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(new Vector3(-rb.velocity.y, transform.rotation.y, transform.rotation.z));
+            if (rb.useGravity)
+            {
+                transform.rotation = Quaternion.Euler(new Vector3(0, originalRot.y, originalRot.z));
+                transform.Translate(speed * Time.deltaTime * transform.forward, Space.World);
+                transform.rotation = Quaternion.Euler(new Vector3(-rb.velocity.y, originalRot.y, originalRot.z));
+            }
+            else
+            {
+                transform.Translate(speed * Time.deltaTime * transform.forward, Space.World);
+            }
         }
-        else
+        if (singing)
         {
-            transform.Translate(transform.forward * speed * Time.deltaTime);
+            GetComponent<SphereCollider>().radius += 1 * Time.deltaTime;
         }
         timer -= Time.deltaTime;
         if (timer <= 0)
@@ -33,14 +45,11 @@ public class ProjectileScript : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (player)
+        if (other.transform.name == "Enemy(Clone)" && other.gameObject.GetComponent<EnemyScript>().enemy != thatOne)
         {
-            if (other.transform.name == "Enemy(Clone)")
-            {
-                other.gameObject.GetComponent<EnemyScript>().health -= damage;
-            }
+            other.gameObject.GetComponent<EnemyScript>().health -= damage;
         }
-        else
+        if (!player)
         {
             if (other.transform.name == "Player")
             {
@@ -56,4 +65,10 @@ public class ProjectileScript : MonoBehaviour
     public bool player;
     public int damage;
     public float timer;
+
+    public bool singing;
+
+    Vector3 originalRot;
+
+    public EnemyScriptable thatOne;
 }

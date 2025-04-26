@@ -20,7 +20,7 @@ public class PlayerScript : MonoBehaviour
         cc = GetComponent<CharacterController>();
         hp = 10;
         cameraRotation = cam.transform.rotation.eulerAngles;
-        GetNewWeapon(validWeapons[0]); // nothing
+        GetNewWeapon(air); // nothing
     }
 
     void Update()
@@ -46,10 +46,16 @@ public class PlayerScript : MonoBehaviour
             died.SetActive(true);
         }
         HudUpdates();
-        if (Input.GetMouseButtonDown(0) && attackCooldown <= 0)
+        if (Input.GetMouseButtonDown(0) && attackCooldown <= 0 && Time.timeScale != 0)
         {
             Attack();
-            attackCooldown = 0.5f;
+            switch (weapon.name)
+            {
+                default: attackCooldown = 0.05f; break;
+                case "Nothing": attackCooldown = 0.35f; break;
+                case "Pan": attackCooldown = 0.35f; break;
+                case "Spike": attackCooldown = 0.3f; break;
+            }
         }
         if (attackCooldown > 0)
         {
@@ -106,6 +112,12 @@ public class PlayerScript : MonoBehaviour
             realGravity = 0;
             jump = false;
         }
+
+        if (transform.position.y <= -10)
+        {
+            hp /= 5;
+            transform.position = new Vector3(0, 10, 0);
+        }
     }
 
     void HudUpdates()
@@ -120,6 +132,8 @@ public class PlayerScript : MonoBehaviour
         }
         weaponSprite.sprite = weapon.sprite;
         weaponDamageTxt.text = (weapon.damage + weaponDamageBonus).ToString();
+        weaponDurabilitySlider.maxValue = weapon.durability + weaponDurabilityBonus;
+        weaponDurabilitySlider.value = durability;
     }
 
     void GetNewWeapon(Weapon weaponCollect)
@@ -131,6 +145,13 @@ public class PlayerScript : MonoBehaviour
     void Attack()
     {
         weaponAnim.SetTrigger(weapon.name);
+
+        if (weapon.name == "Microphone")
+        {
+            singing = true;
+            Invoke(nameof(NotSinging), 9);
+        }
+
         if (!weapon.ranged)
         {
             RaycastHit hit;
@@ -144,7 +165,7 @@ public class PlayerScript : MonoBehaviour
                     durability--;
                     if (durability <= 0)
                     {
-                        GetNewWeapon(validWeapons[0]);
+                        GetNewWeapon(air);
                     }
                 }
             }
@@ -156,11 +177,11 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            Instantiate(projectiles[weapon.projectile]);
+            Instantiate(projectiles[weapon.projectile], transform.position, transform.rotation).SetActive(true);
             durability--;
             if (durability <= 0)
             {
-                GetNewWeapon(validWeapons[0]);
+                GetNewWeapon(air);
             }
         }
     }
@@ -171,6 +192,11 @@ public class PlayerScript : MonoBehaviour
         {
             hp -= other.gameObject.GetComponent<EnemyScript>().damage * Time.deltaTime;
         }
+    }
+
+    void NotSinging()
+    {
+        singing = false;
     }
 
     CharacterController cc;
@@ -203,6 +229,7 @@ public class PlayerScript : MonoBehaviour
     public GameObject died;
     public Image weaponSprite;
     public TMP_Text weaponDamageTxt;
+    public Slider weaponDurabilitySlider;
 
     public Animator weaponAnim;
     [SerializeField]
@@ -210,10 +237,12 @@ public class PlayerScript : MonoBehaviour
 
     public GameObject[] projectiles;
 
-    public Weapon[] validWeapons;
+    public Weapon air;
 
     float attackCooldown;
 
     public int weaponDamageBonus;
     public int weaponDurabilityBonus;
+
+    public bool singing;
 }

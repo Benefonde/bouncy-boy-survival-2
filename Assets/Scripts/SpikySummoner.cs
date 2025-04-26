@@ -12,6 +12,7 @@ public class SpikySummoner : MonoBehaviour
             {
                 a.GetComponent<EnemyScript>().enemy = spikkyBoys[1];
             }
+            a.SetActive(true);
             timmer = Random.Range(1f, 12f);
         }
         else
@@ -21,5 +22,6 @@ public class SpikySummoner : MonoBehaviour
     }
     public GameObject spikayBoy;
     public EnemyScriptable[] spikkyBoys;
+    [SerializeField]
     float timmer;
 }

@@ -19,13 +19,13 @@ public class WaveScript : MonoBehaviour
         if (FindObjectsOfType<EnemyScript>().Length <= 0 && waveInProgress)
         {
             waveInProgress = false;
-            if (wave >= 20)
+            if (wave >= 35)
             {
                 // WIN
                 return;
             }
             wave++;
-            enemies += Mathf.RoundToInt(2 + (wave / 4));
+            enemies += Mathf.RoundToInt(1.35f + (wave / 8));
             NewWave();
         }
         else
@@ -36,16 +36,13 @@ public class WaveScript : MonoBehaviour
 
     void NewWave()
     {
-        if (wave != 1)
+        switch (Mathf.RoundToInt(Random.Range(1, 5.5f)))
         {
-            switch (Mathf.RoundToInt(Random.Range(1, 5.5f)))
-            {
-                case 1: player.maxHp++; break;
-                case 2: player.mainSpeed++; break;
-                case 3: player.regen += 0.2f; break;
-                case 4: player.weaponDamageBonus++; break;
-                case 5: player.weaponDurabilityBonus += 2; break;
-            }
+            case 1: player.maxHp += 2; break;
+            case 2: player.mainSpeed++; break;
+            case 3: player.regen += 0.2f; break;
+            case 4: player.weaponDamageBonus++; break;
+            case 5: player.weaponDurabilityBonus += 2; break;
         }
         waveTxt.text = $"Wave {wave}";
         for (int i = 0; i < enemies; i++)
@@ -57,6 +54,7 @@ public class WaveScript : MonoBehaviour
     }
 
     public int wave;
+    [SerializeField]
     float enemies;
     public GameObject enemy;
 
