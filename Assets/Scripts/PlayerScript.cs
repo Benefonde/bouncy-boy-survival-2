@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class PlayerScript : MonoBehaviour
         Cursor.visible = false;
         cc = GetComponent<CharacterController>();
         hp = 10;
+        cameraRotation = cam.transform.rotation.eulerAngles;
+        GetNewWeapon(validWeapons[0]); // nothing
     }
 
     void Update()
@@ -43,6 +46,10 @@ public class PlayerScript : MonoBehaviour
             died.SetActive(true);
         }
         HudUpdates();
+        if (Input.GetMouseButtonDown(0))
+        {
+            Attack();
+        }
     }
 
     void CameraMovement()
@@ -62,14 +69,14 @@ public class PlayerScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && !jump)
         {
             transform.position += new Vector3(0, 5, 0);
-            realGravity = 5;
+            realGravity = 10;
             jump = true;
         }
         if (Input.GetKey(KeyCode.LeftShift))
         {
             speed = mainSpeed * 1.25f;
         }
-        speed *= Mathf.Clamp(hp / maxHp, 0.5f, 1);
+        speed *= Mathf.Clamp(hp / maxHp, 0.65f, 1);
         cc.Move((x + y).normalized * Time.deltaTime * speed);
     }
 
@@ -105,9 +112,49 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    void GetNewWeapon(Weapon weaponCollect)
+    {
+        weapon = weaponCollect;
+        weaponSprite.sprite = weapon.sprite;
+        weaponDamageTxt.text = weapon.damage.ToString();
+        durability = weapon.durability;
+    }
+
+    void Attack()
+    {
+        weaponAnim.SetTrigger(weapon.name);
+        if (!weapon.ranged)
+        {
+            RaycastHit hit;
+            LayerMask mask = LayerMask.GetMask("Enemy");
+            if (Physics.Raycast(transform.position, transform.forward, out hit, weapon.range, mask))
+            {
+                print("i hit him dhar mann");
+                hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage);
+                if (weapon.name != "Nothing")
+                {
+                    durability--;
+                    if (durability <= 0)
+                    {
+                        GetNewWeapon(validWeapons[0]);
+                    }
+                }
+            }
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 4) && hit.transform.gameObject.GetComponent<WeaponPickup>() != null)
+            {
+                GetNewWeapon(hit.transform.gameObject.GetComponent<WeaponPickup>().me);
+                Destroy(hit.transform.gameObject);
+            }
+        }
+        else
+        {
+            // projectile!! RELEASE!!!!!!!!!!!!!!!!!!!!!!!
+        }
+    }
+
     private void OnTriggerStay(Collider other)
     {
-        if (other.transform.name == "Enemy")
+        if (other.transform.name == "Enemy(Clone)")
         {
             hp -= other.gameObject.GetComponent<EnemyScript>().damage * Time.deltaTime;
         }
@@ -124,6 +171,7 @@ public class PlayerScript : MonoBehaviour
     Vector3 cameraRotation;
     public Vector3 cameraOffset;
 
+    [SerializeField]
     float speed;
     public float mainSpeed;
     public float gravity;
@@ -140,4 +188,12 @@ public class PlayerScript : MonoBehaviour
     public Image healthImage;
     public Sprite[] healthSprites;
     public GameObject died;
+    public Image weaponSprite;
+    public TMP_Text weaponDamageTxt;
+
+    public Animator weaponAnim;
+    [SerializeField]
+    int durability;
+
+    public Weapon[] validWeapons;
 }

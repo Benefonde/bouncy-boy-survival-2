@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 204e33829867e2e439bbd2976600c078, type: 3}
-  m_Name: Spiky Boy
+  m_Name: EVIL Painty Girl
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300000, guid: 8e9c323504e5aac479915cfa2c1af8d3, type: 3}
-  enemyName: Spiky Boy
-  health: 8
-  regen: 0
-  speed: 3
-  damage: 3
+  sprite: {fileID: 21300000, guid: e87bd6e75d7e095449f829ab16e68605, type: 3}
+  enemyName: Grayscaled Painty Girl
+  health: 20
+  regen: 0.4
+  speed: 5
+  damage: 1
   enemySpecificGameObject: {fileID: 0}

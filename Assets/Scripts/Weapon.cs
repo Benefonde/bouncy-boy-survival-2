@@ -9,4 +9,5 @@ public class Weapon : ScriptableObject
     public float damage;
     public int durability;
     public bool ranged;
+    public float range;
 }

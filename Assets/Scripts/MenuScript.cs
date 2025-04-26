@@ -10,7 +10,7 @@ public class MenuScript : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        sensitivity.value = (PlayerPrefs.GetFloat("sensitivity", 0.8f) +  5) / 10;
+        sensitivity.value = (PlayerPrefs.GetFloat("sensitivity", 0.8f) + 5) * 10;
     }
 
     public void Bye()

@@ -16,3 +16,4 @@ MonoBehaviour:
   damage: 6
   durability: 41
   ranged: 0
+  range: 4

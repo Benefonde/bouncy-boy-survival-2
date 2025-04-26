@@ -11,4 +11,6 @@ public class EnemyScriptable : ScriptableObject
     public float regen;
     public float speed;
     public float damage;
+    public GameObject enemySpecificGameObject;
+    public int chanceOfDrop;
 }
