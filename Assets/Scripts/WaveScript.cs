@@ -19,7 +19,7 @@ public class WaveScript : MonoBehaviour
         if (FindObjectsOfType<EnemyScript>().Length <= 0 && waveInProgress)
         {
             waveInProgress = false;
-            if (wave >= 35)
+            if (wave >= 35 && PlayerPrefs.GetInt("endless") == 0)
             {
                 // WIN
                 return;
@@ -38,7 +38,7 @@ public class WaveScript : MonoBehaviour
     {
         switch (Mathf.RoundToInt(Random.Range(1, 5.5f)))
         {
-            case 1: player.maxHp += 2; break;
+            case 1: player.maxHp += 2; player.hp += 2; break;
             case 2: player.mainSpeed++; break;
             case 3: player.regen += 0.2f; break;
             case 4: player.weaponDamageBonus++; break;

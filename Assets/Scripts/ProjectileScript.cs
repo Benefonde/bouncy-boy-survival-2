@@ -54,6 +54,10 @@ public class ProjectileScript : MonoBehaviour
             if (other.transform.name == "Player")
             {
                 other.gameObject.GetComponent<PlayerScript>().hp -= damage;
+                if (transform.name == "Spider Cobweb")
+                {
+                    StartCoroutine(other.gameObject.GetComponent<PlayerScript>().Cobweb());
+                }
             }
         }
     }

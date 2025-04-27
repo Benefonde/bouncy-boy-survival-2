@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 204e33829867e2e439bbd2976600c078, type: 3}
-  m_Name: Spiky Boy (bloodthirst)
+  m_Name: Spidey Boy
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300000, guid: 0a258363731e5294c84ce3f8a90c50b9, type: 3}
-  enemyName: Bloodthirst Spiky Boy
-  health: 16
+  sprite: {fileID: 21300000, guid: 8fd4d64720d57d9409762461c0dc0c31, type: 3}
+  enemyName: Spidey Boy
+  health: 15
   regen: 2
-  speed: 6
+  speed: 8
   damage: 6
-  enemySpecificGameObjectId: -1
+  enemySpecificGameObjectId: 2
   chanceOfDrop: 2
-  weaponDrop: {fileID: 11400000, guid: fafa9a31ce1c156449d33b3215e68818, type: 2}
+  weaponDrop: {fileID: 11400000, guid: 8116d22182f3b5649a82f84d60600749, type: 2}
+  artifactDrop: {fileID: 11400000, guid: d5bce8601b654a74a81cb71390551c60, type: 2}

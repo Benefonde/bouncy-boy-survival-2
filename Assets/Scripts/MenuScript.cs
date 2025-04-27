@@ -11,6 +11,26 @@ public class MenuScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         sensitivity.value = PlayerPrefs.GetFloat("sensitivity", 10f);
+        PlayerPrefs.SetInt("endless", 0);
+        if (PlayerPrefs.GetInt("healthAlt", 0) == 0)
+        {
+            healthThing.value = 10;
+        }
+        else
+        {
+            healthThing.value = 3;
+        }
+    }
+
+    void Update()
+    {
+        if (help != null)
+        {
+            if (Input.GetKeyDown(KeyCode.F1) || Input.GetKeyDown(KeyCode.H))
+            {
+                help.SetActive(!help.activeSelf);
+            }
+        }
     }
 
     public void Bye()
@@ -23,11 +43,29 @@ public class MenuScript : MonoBehaviour
         SceneManager.LoadScene(scene);
     }
 
+    public void HiEndless()
+    {
+        PlayerPrefs.SetInt("endless", 1);
+    }
+
     public void SetSensitivity()
     {
         PlayerPrefs.SetFloat("sensitivity", (sensitivity.value));
     }
-    
+    public void SetHealthAppearance()
+    {
+        if (PlayerPrefs.GetInt("healthAlt", 0) == 1)
+        {
+            PlayerPrefs.SetInt("healthAlt", 0);
+            healthThing.value = 10;
+        }
+        else
+        {
+            PlayerPrefs.SetInt("healthAlt", 1);
+            healthThing.value = 3;
+        }
+    }
+
     public void ToggleFullscreen()
     {
         if (Screen.fullScreen)
@@ -42,4 +80,7 @@ public class MenuScript : MonoBehaviour
     }
 
     public Slider sensitivity;
+    public Slider healthThing;
+
+    public GameObject help;
 }

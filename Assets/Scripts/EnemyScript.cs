@@ -11,7 +11,7 @@ public class EnemyScript : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         if (spawnedByWave)
         {
-            agent.Warp(new Vector3(Random.Range(-135, 135), 5, Random.Range(-135, 135))); // hoping this drops the enemy down to floor height
+            agent.Warp(new Vector3(Random.Range(-135, 135), 5, Random.Range(-135, 135))); // hoping this drops the enemy down to floor height (IT DOES)
             if (ws.wave > 2)
             {
                 int rng = Random.Range(1, 31);
@@ -68,6 +68,18 @@ public class EnemyScript : MonoBehaviour
                     wd.SetActive(true);
                 }
             }
+            if (enemy.artifactDrop != null)
+            {
+                if (Random.Range(1, chance * 28) == 1)
+                {
+                    GameObject wd = Instantiate(artifactPickupOnDeath, transform.position, Quaternion.identity);
+                    if (wd.GetComponent<ArtifactPickup>() != null)
+                    {
+                        wd.GetComponent<ArtifactPickup>().me = enemy.artifactDrop;
+                    }
+                    wd.SetActive(true);
+                }
+            }
             Destroy(gameObject);
         }
         else
@@ -75,9 +87,34 @@ public class EnemyScript : MonoBehaviour
             agent.enabled = true;
             agent.SetDestination(player.position);
         }
-        if (Vector3.Distance(player.position, transform.position) <= 10 && player.GetComponent<PlayerScript>().singing)
+        health += enemy.regen * Time.deltaTime;
+        if (Vector3.Distance(player.position, transform.position) <= 20 && player.GetComponent<PlayerScript>().singing)
         {
-            health -= 5 * Time.deltaTime;
+            health -= (10 + enemy.regen) * Time.deltaTime;
+        }
+    }
+
+    public IEnumerator Fire(float time)
+    {
+        float timmer = time;
+        fire.SetActive(true);
+        while (timmer > 0)
+        {
+            timmer -= Time.deltaTime;
+            health -= 4 * Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        if (health > 0)
+        {
+            fire.SetActive(false);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.name.Contains("Player Cobweb"))
+        {
+            agent.speed /= 5;
         }
     }
 
@@ -91,6 +128,7 @@ public class EnemyScript : MonoBehaviour
     SpriteRenderer sr;
 
     public GameObject weaponPickupOnDeath;
+    public GameObject artifactPickupOnDeath;
 
     public int chance;
 
@@ -100,4 +138,6 @@ public class EnemyScript : MonoBehaviour
     public EnemyScriptable[] validEnemies;
 
     public GameObject[] specificGO;
+
+    public GameObject fire;
 }

@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f5724edd103042499af43923fbc600b, type: 3}
-  m_Name: Crossbow
+  m_Script: {fileID: 11500000, guid: b052038431f78f74c977d373e174d37a, type: 3}
+  m_Name: Cross
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300000, guid: 936073f7a53e6fe40b37d8562fc31268, type: 3}
-  damage: 8
-  durability: 70
-  ranged: 1
-  projectile: 1
-  range: 0
+  sprite: {fileID: 21300000, guid: 0edd885d417cf8b4493a40217a60099e, type: 3}
+  durability: 15

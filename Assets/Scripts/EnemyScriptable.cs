@@ -14,4 +14,5 @@ public class EnemyScriptable : ScriptableObject
     public int enemySpecificGameObjectId;
     public int chanceOfDrop;
     public Weapon weaponDrop;
+    public Artifact artifactDrop;
 }

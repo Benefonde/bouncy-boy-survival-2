@@ -21,6 +21,7 @@ public class PlayerScript : MonoBehaviour
         hp = 10;
         cameraRotation = cam.transform.rotation.eulerAngles;
         GetNewWeapon(air); // nothing
+        GetNewArtifact(airtifact);
     }
 
     void Update()
@@ -33,7 +34,6 @@ public class PlayerScript : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Locked;
         }
-        CameraMovement();
         PlayerMovement();
         GravityShits();
         if (hp < maxHp)
@@ -45,6 +45,10 @@ public class PlayerScript : MonoBehaviour
             Time.timeScale = 0;
             died.SetActive(true);
         }
+        if (hp > maxHp)
+        {
+            hp = maxHp;
+        }
         HudUpdates();
         if (Input.GetMouseButtonDown(0) && attackCooldown <= 0 && Time.timeScale != 0)
         {
@@ -55,11 +59,45 @@ public class PlayerScript : MonoBehaviour
                 case "Nothing": attackCooldown = 0.35f; break;
                 case "Pan": attackCooldown = 0.35f; break;
                 case "Spike": attackCooldown = 0.3f; break;
+                case "Microphone": attackCooldown = 9f; break;
             }
         }
         if (attackCooldown > 0)
         {
             attackCooldown -= Time.deltaTime;
+        }
+        ArtifactUpdate();
+    }
+
+    void LateUpdate()
+    {
+        CameraMovement();
+    }
+
+    void ArtifactUpdate()
+    {
+        switch (artifactEquipped.name)
+        {
+            case "Campfire":
+                Instantiate(artifactGameObjects[0], transform.position, transform.rotation).SetActive(true);
+                GetNewArtifact(airtifact);
+                break;
+            case "Cobweb":
+                if (cobwebCooldown <= 0)
+                {
+                    Instantiate(artifactGameObjects[1], transform.position, transform.rotation).SetActive(true);
+                    artifactDurability--;
+                    if (artifactDurability <= 0)
+                    {
+                        GetNewArtifact(airtifact);
+                    }
+                    cobwebCooldown = 10;
+                }
+                else
+                {
+                    cobwebCooldown -= Time.deltaTime;
+                }
+                break;
         }
     }
 
@@ -122,6 +160,15 @@ public class PlayerScript : MonoBehaviour
 
     void HudUpdates()
     {
+        if (PlayerPrefs.GetInt("healthAlt", 0) == 1)
+        {
+            healthSlider.value = Mathf.RoundToInt(hp);
+            healthSlider.maxValue = maxHp;
+        }
+        else
+        {
+            healthSlider.value = healthSlider.maxValue;
+        }
         healthImage.color = new Color(1, hp / maxHp, hp / maxHp, 1);
         switch (Mathf.Round((hp / maxHp) * 4) / 4)
         {
@@ -134,12 +181,21 @@ public class PlayerScript : MonoBehaviour
         weaponDamageTxt.text = (weapon.damage + weaponDamageBonus).ToString();
         weaponDurabilitySlider.maxValue = weapon.durability + weaponDurabilityBonus;
         weaponDurabilitySlider.value = durability;
+
+        artifactImage.sprite = artifactEquipped.sprite;
+        artifactDurabilitySlider.maxValue = artifactEquipped.durability;
+        artifactDurabilitySlider.value = artifactDurability; 
     }
 
     void GetNewWeapon(Weapon weaponCollect)
     {
         weapon = weaponCollect;
         durability = weapon.durability + weaponDurabilityBonus;
+    }
+    void GetNewArtifact(Artifact artifact)
+    {
+        artifactEquipped = artifact;
+        artifactDurability = artifactEquipped.durability + weaponDurabilityBonus;
     }
 
     void Attack()
@@ -160,6 +216,20 @@ public class PlayerScript : MonoBehaviour
             {
                 print("i hit him dhar mann");
                 hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage + weaponDamageBonus);
+                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.name.Contains("Spiky Boy"))
+                {
+                    hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(9 + weaponDamageBonus);
+                    artifactDurability--;
+                }
+                if (artifactEquipped.name == "Lighter")
+                {
+                    StartCoroutine(hit.transform.gameObject.GetComponent<EnemyScript>().Fire(Random.Range(6, 14)));
+                    artifactDurability--;
+                }
+                if (artifactDurability <= 0)
+                {
+                    GetNewArtifact(airtifact);
+                }
                 if (weapon.name != "Nothing")
                 {
                     durability--;
@@ -172,6 +242,11 @@ public class PlayerScript : MonoBehaviour
             if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 4) && hit.transform.gameObject.GetComponent<WeaponPickup>() != null)
             {
                 GetNewWeapon(hit.transform.gameObject.GetComponent<WeaponPickup>().me);
+                Destroy(hit.transform.gameObject);
+            }
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 4) && hit.transform.gameObject.GetComponent<ArtifactPickup>() != null)
+            {
+                GetNewArtifact(hit.transform.gameObject.GetComponent<ArtifactPickup>().me);
                 Destroy(hit.transform.gameObject);
             }
         }
@@ -199,6 +274,13 @@ public class PlayerScript : MonoBehaviour
         singing = false;
     }
 
+    public IEnumerator Cobweb()
+    {
+        mainSpeed /= 5;
+        yield return new WaitForSeconds(5);
+        mainSpeed *= 5;
+    }
+
     CharacterController cc;
 
     GameObject cam;
@@ -224,6 +306,7 @@ public class PlayerScript : MonoBehaviour
     public float regen;
     public Weapon weapon;
 
+    public Slider healthSlider;
     public Image healthImage;
     public Sprite[] healthSprites;
     public GameObject died;
@@ -234,15 +317,24 @@ public class PlayerScript : MonoBehaviour
     public Animator weaponAnim;
     [SerializeField]
     int durability;
+    [SerializeField]
+    float artifactDurability;
 
     public GameObject[] projectiles;
+    public GameObject[] artifactGameObjects;
 
     public Weapon air;
+    public Artifact airtifact;
 
     float attackCooldown;
 
     public int weaponDamageBonus;
     public int weaponDurabilityBonus;
+
+    public Artifact artifactEquipped;
+    public Image artifactImage;
+    public Slider artifactDurabilitySlider;
+    float cobwebCooldown;
 
     public bool singing;
 }

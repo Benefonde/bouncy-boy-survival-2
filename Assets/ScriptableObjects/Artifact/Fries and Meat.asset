@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f5724edd103042499af43923fbc600b, type: 3}
-  m_Name: Nothing
+  m_Script: {fileID: 11500000, guid: b052038431f78f74c977d373e174d37a, type: 3}
+  m_Name: Fries and Meat
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300000, guid: 6219aeb57b7142d479b6df2a0884aa26, type: 3}
-  damage: 2
-  durability: -1
-  ranged: 0
-  range: 3
+  sprite: {fileID: 21300000, guid: 323ffabe31f60a54f8aa65008fccff17, type: 3}
+  durability: 30
