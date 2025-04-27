@@ -70,7 +70,7 @@ public class EnemyScript : MonoBehaviour
             }
             if (enemy.artifactDrop != null)
             {
-                if (Random.Range(1, chance * 28) == 1)
+                if (Random.Range(1, chance * 12) == 1)
                 {
                     GameObject wd = Instantiate(artifactPickupOnDeath, transform.position, Quaternion.identity);
                     if (wd.GetComponent<ArtifactPickup>() != null)

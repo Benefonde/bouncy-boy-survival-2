@@ -264,6 +264,7 @@ MonoBehaviour:
   health: 1
   damage: 1
   weaponPickupOnDeath: {fileID: 2044240576}
+  artifactPickupOnDeath: {fileID: 0}
   chance: 0
   spawnedByWave: 1
   ws: {fileID: 1872476935}
@@ -1087,6 +1088,7 @@ MonoBehaviour:
   timer: 8
   singing: 0
   thatOne: {fileID: 0}
+  yahoo: 15
 --- !u!65 &152857252
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1247,6 +1249,7 @@ MonoBehaviour:
   timer: 120
   singing: 0
   thatOne: {fileID: 0}
+  yahoo: 0
 --- !u!114 &229352223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3679,6 +3682,7 @@ MonoBehaviour:
   timer: 9
   singing: 1
   thatOne: {fileID: 0}
+  yahoo: 0
 --- !u!4 &907115401
 Transform:
   m_ObjectHideFlags: 0
@@ -4537,6 +4541,7 @@ MonoBehaviour:
   timer: 3.5
   singing: 0
   thatOne: {fileID: 11400000, guid: 0dfdb9435743a604883e5e53a79215aa, type: 2}
+  yahoo: 3
 --- !u!65 &1368698321
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4712,6 +4717,7 @@ MonoBehaviour:
   timer: 3.5
   singing: 0
   thatOne: {fileID: 11400000, guid: 48e2892ea4b8cf54e8994c4ed3388ad9, type: 2}
+  yahoo: 3
 --- !u!65 &1468010066
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6318,6 +6324,7 @@ MonoBehaviour:
   timer: 8
   singing: 0
   thatOne: {fileID: 0}
+  yahoo: 15
 --- !u!65 &5881807760476134626
 BoxCollider:
   m_ObjectHideFlags: 0

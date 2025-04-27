@@ -216,7 +216,7 @@ public class PlayerScript : MonoBehaviour
             {
                 print("i hit him dhar mann");
                 hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage + weaponDamageBonus);
-                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.name.Contains("Spiky Boy"))
+                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.name.Contains("Spiky Boy") && artifactEquipped.name == "Cross")
                 {
                     hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(9 + weaponDamageBonus);
                     artifactDurability--;

@@ -15,7 +15,7 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 0a258363731e5294c84ce3f8a90c50b9, type: 3}
   enemyName: Bloodthirst Spiky Boy
   health: 16
-  regen: 2
+  regen: 0.75
   speed: 6
   damage: 6
   enemySpecificGameObjectId: -1

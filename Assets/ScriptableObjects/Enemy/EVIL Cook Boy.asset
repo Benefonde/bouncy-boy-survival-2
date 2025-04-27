@@ -15,7 +15,7 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: e9195ea70cde26f43bc279b59c7b61e6, type: 3}
   enemyName: Grayscaled Cook Boy
   health: 20
-  regen: 0.6
+  regen: 0.3
   speed: 4
   damage: 7
   enemySpecificGameObjectId: -1

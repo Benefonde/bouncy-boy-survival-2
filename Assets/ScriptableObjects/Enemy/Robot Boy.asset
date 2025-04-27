@@ -15,7 +15,7 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: f1b79713b31344e47afb788c589adeb7, type: 3}
   enemyName: Robot Boy
   health: 50
-  regen: 0
+  regen: -0.01
   speed: 0.25
   damage: 5
   enemySpecificGameObjectId: 0

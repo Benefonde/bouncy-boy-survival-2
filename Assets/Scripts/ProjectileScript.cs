@@ -12,7 +12,7 @@ public class ProjectileScript : MonoBehaviour
             rb = GetComponent<Rigidbody>();
             if (rb.useGravity)
             {
-                rb.AddForce(transform.up * speed * 15);
+                rb.AddForce(transform.up * speed * yahoo);
             }
         }
     }
@@ -75,4 +75,6 @@ public class ProjectileScript : MonoBehaviour
     Vector3 originalRot;
 
     public EnemyScriptable thatOne;
+
+    public int yahoo = 15;
 }
