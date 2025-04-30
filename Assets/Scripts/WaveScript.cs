@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -21,7 +22,8 @@ public class WaveScript : MonoBehaviour
             waveInProgress = false;
             if (wave >= 35 && PlayerPrefs.GetInt("endless") == 0)
             {
-                // WIN
+                PlayerPrefs.SetInt("wonMain", 1);
+                SceneManager.LoadScene("End");
                 return;
             }
             wave++;
@@ -40,7 +42,7 @@ public class WaveScript : MonoBehaviour
                 Destroy(FindObjectsOfType<EnemyScript>()[i]);
             }
             wave++;
-            enemies += Mathf.RoundToInt(1.35f + (wave / 8));
+            enemies += Mathf.RoundToInt(1.35f + (wave / 6) + 1);
             NewWave();
         }
     }

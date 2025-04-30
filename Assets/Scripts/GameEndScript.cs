@@ -28,6 +28,11 @@ public class GameEndScript : MonoBehaviour
             howdidyoudo.text = $"wasn't very great.";
             mayan[2].SetActive(true);
         }
+
+        if (PlayerPrefs.GetInt("endless") == 1)
+        {
+            PlayerPrefs.SetInt("endlessWaves", waave);
+        }
     }
 
     public void Bye()

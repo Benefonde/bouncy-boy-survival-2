@@ -18,6 +18,8 @@ public class PlayerScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         cc = GetComponent<CharacterController>();
+        aud = GetComponent<AudioSource>();
+        weaponAud = GetComponentInChildren<AudioSource>();
         hp = 10;
         cameraRotation = cam.transform.rotation.eulerAngles;
         GetNewWeapon(air); // nothing
@@ -44,8 +46,9 @@ public class PlayerScript : MonoBehaviour
         {
             if (artifactEquipped.name == "Cross")
             {
+                transform.position = new Vector3(0, 10, 0);
                 hp = maxHp / 4; 
-                realGravity = 30;
+                realGravity = 20;
                 jump = true;
                 GetNewArtifact(airtifact);
                 return;
@@ -108,6 +111,16 @@ public class PlayerScript : MonoBehaviour
                     cobwebCooldown -= Time.deltaTime;
                 }
                 break;
+            case "Fries and Meat":
+                artifactDurability -= Time.deltaTime;
+                if (artifactDurability <= 0)
+                {
+                    maxHp += 5;
+                    hp += 5;
+                    regen += 0.5f;
+                    GetNewArtifact(airtifact);
+                }
+                break;
         }
     }
 
@@ -125,9 +138,13 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
+            if (possibleKriller == null)
+            {
+                possibleKriller = transform;
+            }
             gameObject.layer = 0;
             cam.transform.LookAt(possibleKriller);
-            cam.transform.position = possibleKriller.transform.position + (transform.forward * 3) + (transform.up * 2);
+            cam.transform.position = possibleKriller.transform.position + (transform.forward * 3.5f) + (transform.up * 2.5f);
         }
     }
 
@@ -148,7 +165,33 @@ public class PlayerScript : MonoBehaviour
             speed = mainSpeed * 1.35f;
         }
         speed *= Mathf.Clamp(hp / maxHp, 0.65f, 1);
+        if (artifactEquipped.name == "Nothing")
+        {
+            speed += 0.15f;
+        }
         cc.Move((x + y).normalized * Time.deltaTime * speed);
+        if (cc.velocity.magnitude > 0.15f && !jump)
+        {
+            if (footstepTimer > 0)
+            {
+                footstepTimer -= Time.deltaTime;
+            }
+            else
+            {
+                FootstepSound();
+                footstepTimer = 0.4f - (mainSpeed / 130);
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    footstepTimer = 0.3f - (mainSpeed / 120);
+                }
+            }
+        }
+    }
+
+    void FootstepSound()
+    {
+        aud.pitch = Random.Range(0.8f, 1.2f);
+        aud.PlayOneShot(walk, 0.3f);
     }
 
     void GravityShits()
@@ -199,6 +242,10 @@ public class PlayerScript : MonoBehaviour
         weaponSprite.sprite = weapon.sprite;
         weaponDamageTxt.text = (weapon.damage + weaponDamageBonus).ToString();
         weaponDurabilitySlider.maxValue = weapon.durability + weaponDurabilityBonus;
+        if (weapon.name == "Crossbow")
+        {
+            weaponDurabilitySlider.maxValue += weaponDurabilityBonus * 4;
+        }
         weaponDurabilitySlider.value = durability;
 
         artifactImage.sprite = artifactEquipped.sprite;
@@ -212,6 +259,10 @@ public class PlayerScript : MonoBehaviour
     {
         weapon = weaponCollect;
         durability = weapon.durability + weaponDurabilityBonus;
+        if (weapon.name == "Crossbow")
+        {
+            durability += weaponDurabilityBonus * 4;
+        }
     }
     void GetNewArtifact(Artifact artifact)
     {
@@ -228,20 +279,35 @@ public class PlayerScript : MonoBehaviour
             singing = true;
             Invoke(nameof(NotSinging), 9);
         }
+        else
+        {
+            weaponAud.PlayOneShot(woosh);
+        }
 
         RaycastHit hit;
+
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 3.25f) && hit.transform.gameObject.GetComponent<ProjectileScript>() != null)
         {
             print("You parried him dhar mann");
             hit.transform.gameObject.GetComponent<ProjectileScript>().Parry();
+            weaponAud.Play();
         }
         if (!weapon.ranged)
-        {;
+        {
             if (Physics.Raycast(transform.position, transform.forward, out hit, weapon.range) && hit.transform.gameObject.GetComponent<EnemyScript>() != null)
             {
                 print("i hit him dhar mann");
                 hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage + weaponDamageBonus);
-                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.name == artifactEquipped.enemyEffective)
+                if (artifactEquipped.name == "Bloodthirst Spike")
+                {
+                    hp += Mathf.RoundToInt((weapon.damage + weaponDamageBonus) / 3);
+                    if (Random.Range(1, 10) == 4)
+                    {
+                        maxHp++;
+                    }
+                    artifactDurability--;
+                }
+                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.enemyName == artifactEquipped.enemyEffective)
                 {
                     hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(9 + weaponDamageBonus);
                     artifactDurability--;
@@ -264,16 +330,6 @@ public class PlayerScript : MonoBehaviour
                     }
                 }
             }
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 4) && hit.transform.gameObject.GetComponent<WeaponPickup>() != null)
-            {
-                GetNewWeapon(hit.transform.gameObject.GetComponent<WeaponPickup>().me);
-                Destroy(hit.transform.gameObject);
-            }
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 4) && hit.transform.gameObject.GetComponent<ArtifactPickup>() != null)
-            {
-                GetNewArtifact(hit.transform.gameObject.GetComponent<ArtifactPickup>().me);
-                Destroy(hit.transform.gameObject);
-            }
         }
         else
         {
@@ -283,6 +339,17 @@ public class PlayerScript : MonoBehaviour
             {
                 GetNewWeapon(air);
             }
+        }
+
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 5) && hit.transform.gameObject.GetComponent<WeaponPickup>() != null)
+        {
+            GetNewWeapon(hit.transform.gameObject.GetComponent<WeaponPickup>().me);
+            Destroy(hit.transform.gameObject);
+        }
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 5) && hit.transform.gameObject.GetComponent<ArtifactPickup>() != null)
+        {
+            GetNewArtifact(hit.transform.gameObject.GetComponent<ArtifactPickup>().me);
+            Destroy(hit.transform.gameObject);
         }
     }
 
@@ -311,7 +378,7 @@ public class PlayerScript : MonoBehaviour
     {
         mainSpeed /= 1.3f;
         yield return new WaitForSeconds(2);
-        mainSpeed *= 1.31f;
+        mainSpeed *= 1.302f;
     }
 
     CharacterController cc;
@@ -374,4 +441,15 @@ public class PlayerScript : MonoBehaviour
     public Slider cooldownSider;
 
     public Transform possibleKriller;
+
+    AudioSource aud;
+
+    public AudioSource weaponAud;
+    
+    public AudioClip walk;
+    [SerializeField]
+    float footstepTimer;
+
+    public AudioClip woosh;
+    public AudioClip impact;
 }

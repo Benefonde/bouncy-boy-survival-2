@@ -46,13 +46,17 @@ public class ProjectileScript : MonoBehaviour
             if (other.transform.name == "Enemy(Clone)" && other.gameObject.GetComponent<EnemyScript>().enemy != thatOne)
             {
                 other.gameObject.GetComponent<EnemyScript>().health -= damage;
+                if (player)
+                {
+                    other.gameObject.GetComponent<EnemyScript>().health -= FindObjectOfType<PlayerScript>().weaponDamageBonus;
+                }
             }
         }
         if (!player)
         {
             if (other.transform.name == "Player")
             {
-                other.gameObject.GetComponent<PlayerScript>().hp -= damage;
+                other.gameObject.GetComponent<PlayerScript>().hp -= damage / 2;
                 if (transform.name == "Spider Cobweb(Clone)")
                 {
                     StartCoroutine(other.gameObject.GetComponent<PlayerScript>().Cobweb());
@@ -74,7 +78,8 @@ public class ProjectileScript : MonoBehaviour
                 rb.AddForce(transform.up * speed * yahoo);
             }
             timer += 5;
-            damage *= 3;
+            damage *= 4;
+            thatOne = null;
         }
     }
 

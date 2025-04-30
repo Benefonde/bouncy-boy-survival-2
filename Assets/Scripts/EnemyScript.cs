@@ -112,9 +112,9 @@ public class EnemyScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.name.Contains("Player Cobweb"))
+        if (other.transform.name.Contains("Cobweb") && enemy.name != "Spidey Boy")
         {
-            agent.speed /= 5;
+            agent.speed /= 1.5f;
         }
     }
 

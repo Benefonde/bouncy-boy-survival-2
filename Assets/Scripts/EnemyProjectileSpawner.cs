@@ -12,6 +12,10 @@ public class EnemyProjectileSpawner : MonoBehaviour
             a.SetActive(true);
             a.transform.LookAt(player);
             timer = timmer;
+            if (Random.Range(1, 28 + Mathf.RoundToInt(timmer)) == 2)
+            {
+                timer += 5;
+            }
         }
         else
         {
