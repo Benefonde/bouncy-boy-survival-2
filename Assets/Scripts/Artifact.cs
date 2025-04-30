@@ -7,4 +7,5 @@ public class Artifact : ScriptableObject
 {
     public Sprite sprite;
     public float durability;
+    public string enemyEffective;
 }

@@ -3963,10 +3963,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You are Bouncy Boy. You MUST survive. Use weapons from other enemies with
-    left click. Move around with WASD and use the mouse to turn. Survive up until
-    Wave 35 [or forever if you're playing Endless !!] to WIN. Use artifacts to help
-    you. They activate automatically.
+  m_text: You are Bouncy Boy. You MUST survive. Use weapons from other enemies or
+    parry projectiles with left click. Move around with WASD and use the mouse to
+    turn. Survive up until Wave 35 [or forever if you're playing Endless !!] to WIN.
+    Use artifacts to help you. They activate automatically. Remember, you can only
+    carry 1 weapon and 1 artifact at all times.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9ef772038fca3b64a9f8fd8a538af31e, type: 2}
   m_sharedMaterial: {fileID: -5426806664321928277, guid: 9ef772038fca3b64a9f8fd8a538af31e,
@@ -4006,7 +4007,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 20
+  m_lineSpacing: 0
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0

@@ -32,10 +32,6 @@ public class ProjectileScript : MonoBehaviour
                 transform.Translate(speed * Time.deltaTime * transform.forward, Space.World);
             }
         }
-        if (singing)
-        {
-            GetComponent<SphereCollider>().radius += 1 * Time.deltaTime;
-        }
         timer -= Time.deltaTime;
         if (timer <= 0)
         {
@@ -45,20 +41,40 @@ public class ProjectileScript : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.transform.name == "Enemy(Clone)" && other.gameObject.GetComponent<EnemyScript>().enemy != thatOne)
+        if (other.gameObject.GetComponent<EnemyScript>() != null)
         {
-            other.gameObject.GetComponent<EnemyScript>().health -= damage;
+            if (other.transform.name == "Enemy(Clone)" && other.gameObject.GetComponent<EnemyScript>().enemy != thatOne)
+            {
+                other.gameObject.GetComponent<EnemyScript>().health -= damage;
+            }
         }
         if (!player)
         {
             if (other.transform.name == "Player")
             {
                 other.gameObject.GetComponent<PlayerScript>().hp -= damage;
-                if (transform.name == "Spider Cobweb")
+                if (transform.name == "Spider Cobweb(Clone)")
                 {
                     StartCoroutine(other.gameObject.GetComponent<PlayerScript>().Cobweb());
                 }
             }
+        }
+    }
+
+    public void Parry()
+    {
+        if (!player)
+        {
+            player = true;;
+            transform.SetPositionAndRotation(transform.position, FindObjectOfType<PlayerScript>().transform.rotation);
+            originalRot = transform.rotation.eulerAngles;
+            rb = GetComponent<Rigidbody>();
+            if (rb.useGravity)
+            {
+                rb.AddForce(transform.up * speed * yahoo);
+            }
+            timer += 5;
+            damage *= 3;
         }
     }
 

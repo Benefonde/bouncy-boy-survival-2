@@ -42,8 +42,17 @@ public class PlayerScript : MonoBehaviour
         }
         if (hp <= 0)
         {
+            if (artifactEquipped.name == "Cross")
+            {
+                hp = maxHp / 4; 
+                realGravity = 30;
+                jump = true;
+                GetNewArtifact(airtifact);
+                return;
+            }
             Time.timeScale = 0;
             died.SetActive(true);
+            PlayerPrefs.SetInt("WaveNumber", FindObjectOfType<WaveScript>().wave);
         }
         if (hp > maxHp)
         {
@@ -52,7 +61,6 @@ public class PlayerScript : MonoBehaviour
         HudUpdates();
         if (Input.GetMouseButtonDown(0) && attackCooldown <= 0 && Time.timeScale != 0)
         {
-            Attack();
             switch (weapon.name)
             {
                 default: attackCooldown = 0.05f; break;
@@ -61,6 +69,8 @@ public class PlayerScript : MonoBehaviour
                 case "Spike": attackCooldown = 0.3f; break;
                 case "Microphone": attackCooldown = 9f; break;
             }
+            cooldownSider.maxValue = attackCooldown;
+            Attack();
         }
         if (attackCooldown > 0)
         {
@@ -103,12 +113,21 @@ public class PlayerScript : MonoBehaviour
 
     void CameraMovement()
     {
-        if (Time.timeScale != 0)
+        if (hp > 0)
         {
-            mouseRotation = new Vector2(Input.GetAxis("Mouse Y"), -Input.GetAxis("Mouse X"));
-            cameraRotation += -mouseRotation * mouseSensitivity;
-            cam.transform.rotation = Quaternion.Euler(cameraRotation);
-            cam.transform.position = transform.position + cameraOffset;
+            if (Time.timeScale != 0)
+            {
+                mouseRotation = new Vector2(Input.GetAxis("Mouse Y"), -Input.GetAxis("Mouse X"));
+                cameraRotation += -mouseRotation * mouseSensitivity;
+                cam.transform.rotation = Quaternion.Euler(cameraRotation);
+                cam.transform.position = transform.position + cameraOffset;
+            }
+        }
+        else
+        {
+            gameObject.layer = 0;
+            cam.transform.LookAt(possibleKriller);
+            cam.transform.position = possibleKriller.transform.position + (transform.forward * 3) + (transform.up * 2);
         }
     }
 
@@ -184,7 +203,9 @@ public class PlayerScript : MonoBehaviour
 
         artifactImage.sprite = artifactEquipped.sprite;
         artifactDurabilitySlider.maxValue = artifactEquipped.durability;
-        artifactDurabilitySlider.value = artifactDurability; 
+        artifactDurabilitySlider.value = artifactDurability;
+
+        cooldownSider.value = attackCooldown;
     }
 
     void GetNewWeapon(Weapon weaponCollect)
@@ -208,15 +229,19 @@ public class PlayerScript : MonoBehaviour
             Invoke(nameof(NotSinging), 9);
         }
 
-        if (!weapon.ranged)
+        RaycastHit hit;
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 3.25f) && hit.transform.gameObject.GetComponent<ProjectileScript>() != null)
         {
-            RaycastHit hit;
-            LayerMask mask = LayerMask.GetMask("Enemy");
-            if (Physics.Raycast(transform.position, transform.forward, out hit, weapon.range, mask))
+            print("You parried him dhar mann");
+            hit.transform.gameObject.GetComponent<ProjectileScript>().Parry();
+        }
+        if (!weapon.ranged)
+        {;
+            if (Physics.Raycast(transform.position, transform.forward, out hit, weapon.range) && hit.transform.gameObject.GetComponent<EnemyScript>() != null)
             {
                 print("i hit him dhar mann");
                 hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage + weaponDamageBonus);
-                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.name.Contains("Spiky Boy") && artifactEquipped.name == "Cross")
+                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.name == artifactEquipped.enemyEffective)
                 {
                     hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(9 + weaponDamageBonus);
                     artifactDurability--;
@@ -269,6 +294,14 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == 10)
+        {
+            possibleKriller = other.transform;
+        }
+    }
+
     void NotSinging()
     {
         singing = false;
@@ -276,9 +309,9 @@ public class PlayerScript : MonoBehaviour
 
     public IEnumerator Cobweb()
     {
-        mainSpeed /= 5;
-        yield return new WaitForSeconds(5);
-        mainSpeed *= 5;
+        mainSpeed /= 1.3f;
+        yield return new WaitForSeconds(2);
+        mainSpeed *= 1.31f;
     }
 
     CharacterController cc;
@@ -337,4 +370,8 @@ public class PlayerScript : MonoBehaviour
     float cobwebCooldown;
 
     public bool singing;
+
+    public Slider cooldownSider;
+
+    public Transform possibleKriller;
 }

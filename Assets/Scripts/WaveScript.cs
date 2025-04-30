@@ -32,6 +32,17 @@ public class WaveScript : MonoBehaviour
         {
             enemySlider.value = FindObjectsOfType<EnemyScript>().Length;
         }
+
+        if (Input.GetKey(KeyCode.KeypadPlus) && Input.GetKeyDown(KeyCode.Quote))
+        {
+            for (int i = 0; i < FindObjectsOfType<EnemyScript>().Length; i++)
+            {
+                Destroy(FindObjectsOfType<EnemyScript>()[i]);
+            }
+            wave++;
+            enemies += Mathf.RoundToInt(1.35f + (wave / 8));
+            NewWave();
+        }
     }
 
     void NewWave()
@@ -64,4 +75,6 @@ public class WaveScript : MonoBehaviour
     bool waveInProgress;
 
     public PlayerScript player;
+
+    public int SkipBy;
 }

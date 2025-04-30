@@ -21,4 +21,4 @@ MonoBehaviour:
   enemySpecificGameObjectId: -1
   chanceOfDrop: 2
   weaponDrop: {fileID: 11400000, guid: fafa9a31ce1c156449d33b3215e68818, type: 2}
-  artifactDrop: {fileID: 0}
+  artifactDrop: {fileID: 11400000, guid: c7502c8174e4621499e3aaadfe956661, type: 2}

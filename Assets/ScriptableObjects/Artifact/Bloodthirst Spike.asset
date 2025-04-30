@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b052038431f78f74c977d373e174d37a, type: 3}
-  m_Name: Fries and Meat
+  m_Name: Bloodthirst Spike
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300000, guid: 323ffabe31f60a54f8aa65008fccff17, type: 3}
-  durability: 30
-  enemyEffective: Grayscaled Cook Boy
+  sprite: {fileID: 21300000, guid: 3e0b2c5adc30c1a4e925281d320e9f5b, type: 3}
+  durability: 25
+  enemyEffective: Spiky Boy

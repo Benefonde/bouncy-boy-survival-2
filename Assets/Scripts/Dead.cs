@@ -10,7 +10,7 @@ public class Dead : MonoBehaviour
     {
         if (!GetComponent<AudioSource>().isPlaying)
         {
-            SceneManager.LoadScene("Title");
+            SceneManager.LoadScene("End");
         }
     }
 }
