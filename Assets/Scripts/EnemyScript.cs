@@ -15,19 +15,19 @@ public class EnemyScript : MonoBehaviour
             if (ws.wave > 2)
             {
                 int rng = Random.Range(1, 31);
-                if (rng < 31)
+                if (rng < 31 && ws.wave > 9)
                 {
                     enemy = validEnemies[5];
                 }
-                if (rng < 30)
+                if (rng < 30 && ws.wave > 7)
                 {
                     enemy = validEnemies[4];
                 }
-                if (rng < 25)
+                if (rng < 25 && ws.wave > 4)
                 {
                     enemy = validEnemies[3];
                 }
-                if (rng < 21)
+                if (rng < 21 && ws.wave > 3)
                 {
                     enemy = validEnemies[2];
                 }

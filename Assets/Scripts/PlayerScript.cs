@@ -19,7 +19,7 @@ public class PlayerScript : MonoBehaviour
         Cursor.visible = false;
         cc = GetComponent<CharacterController>();
         aud = GetComponent<AudioSource>();
-        weaponAud = GetComponentInChildren<AudioSource>();
+        weaponAud = transform.GetChild(0).GetComponent<AudioSource>();
         hp = 10;
         cameraRotation = cam.transform.rotation.eulerAngles;
         GetNewWeapon(air); // nothing
@@ -134,6 +134,7 @@ public class PlayerScript : MonoBehaviour
                 cameraRotation += -mouseRotation * mouseSensitivity;
                 cam.transform.rotation = Quaternion.Euler(cameraRotation);
                 cam.transform.position = transform.position + cameraOffset;
+                arealight.position = cam.transform.position;
             }
         }
         else
@@ -279,9 +280,13 @@ public class PlayerScript : MonoBehaviour
             singing = true;
             Invoke(nameof(NotSinging), 9);
         }
-        else
+        else if (weapon.name != "Crossbow")
         {
             weaponAud.PlayOneShot(woosh);
+        }
+        else
+        {
+            weaponAud.PlayOneShot(crossbow[Random.Range(0, crossbow.Length)]);
         }
 
         RaycastHit hit;
@@ -290,7 +295,16 @@ public class PlayerScript : MonoBehaviour
         {
             print("You parried him dhar mann");
             hit.transform.gameObject.GetComponent<ProjectileScript>().Parry();
-            weaponAud.Play();
+            weaponAud.PlayOneShot(parry[0]);
+            if (Random.Range(1, 28) == 5)
+            {
+                weaponAud.PlayOneShot(parry[1]);
+            }
+            durability -= 2;
+            if (durability <= 0)
+            {
+                GetNewWeapon(air);  
+            }
         }
         if (!weapon.ranged)
         {
@@ -298,9 +312,10 @@ public class PlayerScript : MonoBehaviour
             {
                 print("i hit him dhar mann");
                 hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage + weaponDamageBonus);
+                weaponAud.PlayOneShot(impact);
                 if (artifactEquipped.name == "Bloodthirst Spike")
                 {
-                    hp += Mathf.RoundToInt((weapon.damage + weaponDamageBonus) / 3);
+                    hp += Mathf.RoundToInt((weapon.damage + weaponDamageBonus) / 5);
                     if (Random.Range(1, 10) == 4)
                     {
                         maxHp++;
@@ -378,7 +393,7 @@ public class PlayerScript : MonoBehaviour
     {
         mainSpeed /= 1.3f;
         yield return new WaitForSeconds(2);
-        mainSpeed *= 1.302f;
+        mainSpeed *= 1.3004f;
     }
 
     CharacterController cc;
@@ -442,6 +457,8 @@ public class PlayerScript : MonoBehaviour
 
     public Transform possibleKriller;
 
+    public Transform arealight;
+
     AudioSource aud;
 
     public AudioSource weaponAud;
@@ -452,4 +469,6 @@ public class PlayerScript : MonoBehaviour
 
     public AudioClip woosh;
     public AudioClip impact;
+    public AudioClip[] parry;
+    public AudioClip[] crossbow;
 }

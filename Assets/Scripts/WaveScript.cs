@@ -22,12 +22,13 @@ public class WaveScript : MonoBehaviour
             waveInProgress = false;
             if (wave >= 35 && PlayerPrefs.GetInt("endless") == 0)
             {
+                PlayerPrefs.SetInt("WaveNumber", wave);
                 PlayerPrefs.SetInt("wonMain", 1);
                 SceneManager.LoadScene("End");
                 return;
             }
             wave++;
-            enemies += Mathf.RoundToInt(1.35f + (wave / 8));
+            enemies += Mathf.RoundToInt(1.55f + (wave / 8));
             NewWave();
         }
         else

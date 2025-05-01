@@ -6,6 +6,10 @@ public class ProjectileScript : MonoBehaviour
 {
     void Start()
     {
+        if (!player && FindObjectsOfType<ProjectileScript>().Length > 15 && PlayerPrefs.GetInt("performanceMode") == 1)
+        {
+            Destroy(gameObject);
+        }
         if (!singing)
         {
             originalRot = transform.rotation.eulerAngles;
@@ -69,7 +73,7 @@ public class ProjectileScript : MonoBehaviour
     {
         if (!player)
         {
-            player = true;;
+            player = true;
             transform.SetPositionAndRotation(transform.position, FindObjectOfType<PlayerScript>().transform.rotation);
             originalRot = transform.rotation.eulerAngles;
             rb = GetComponent<Rigidbody>();
@@ -79,6 +83,7 @@ public class ProjectileScript : MonoBehaviour
             }
             timer += 5;
             damage *= 4;
+            speed *= 1.5f;
             thatOne = null;
         }
     }
