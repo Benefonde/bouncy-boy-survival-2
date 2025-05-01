@@ -19,17 +19,33 @@ public class EnemyScript : MonoBehaviour
                 {
                     enemy = validEnemies[5];
                 }
+                else if (rng < 31)
+                {
+                    enemy = validEnemies[4];
+                }
                 if (rng < 30 && ws.wave > 7)
                 {
                     enemy = validEnemies[4];
+                }
+                else if (rng < 30)
+                {
+                    enemy = validEnemies[3];
                 }
                 if (rng < 25 && ws.wave > 4)
                 {
                     enemy = validEnemies[3];
                 }
+                else if (rng < 25)
+                {
+                    enemy = validEnemies[2];
+                }
                 if (rng < 21 && ws.wave > 3)
                 {
                     enemy = validEnemies[2];
+                }
+                else if (rng < 21)
+                {
+                    enemy = validEnemies[1];
                 }
                 if (rng < 16)
                 {
