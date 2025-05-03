@@ -26,7 +26,6 @@ public class MenuScript : MonoBehaviour
         {
             healthThing.value = 3;
         }
-        performanceMode.isOn = true;
         if (PlayerPrefs.GetInt("performanceMode") == 0)
         {
             performanceMode.isOn = false;
