@@ -61,6 +61,12 @@ public class MenuScript : MonoBehaviour
                 help.SetActive(!help.activeSelf);
             }
         }
+
+        if (Input.GetKey(KeyCode.R) && Input.GetKey(KeyCode.Delete) && Input.GetKey(KeyCode.L))
+        {
+            PlayerPrefs.DeleteAll();
+            SceneManager.LoadScene("Title");
+        }
     }
 
 

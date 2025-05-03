@@ -16,7 +16,6 @@ public class EndingAnimation : MonoBehaviour
         playerLight = FindObjectOfType<Light>();
         aud = GetComponent<AudioSource>();
 
-        
         if (Environment.GetCommandLineArgs().ToList().Contains("-bleh"))
         {
             aud.Stop();
