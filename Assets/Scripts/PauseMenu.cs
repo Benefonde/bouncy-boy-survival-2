@@ -23,11 +23,13 @@ public class PauseMenu : MonoBehaviour
         {
             Time.timeScale = 0;
             Cursor.lockState = CursorLockMode.None;
+            AudioListener.pause = true;
         }
         else
         {
             Time.timeScale = 1;
             Cursor.lockState = CursorLockMode.Locked;
+            AudioListener.pause = false;
         }
     }
 

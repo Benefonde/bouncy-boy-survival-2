@@ -15,4 +15,5 @@ public class EnemyScriptable : ScriptableObject
     public int chanceOfDrop;
     public Weapon weaponDrop;
     public Artifact artifactDrop;
+    public bool boss;
 }

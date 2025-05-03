@@ -49,10 +49,10 @@ public class ProjectileScript : MonoBehaviour
         {
             if (other.transform.name == "Enemy(Clone)" && other.gameObject.GetComponent<EnemyScript>().enemy != thatOne)
             {
-                other.gameObject.GetComponent<EnemyScript>().health -= damage;
+                other.gameObject.GetComponent<EnemyScript>().health -= damage / 2;
                 if (player)
                 {
-                    other.gameObject.GetComponent<EnemyScript>().health -= FindObjectOfType<PlayerScript>().weaponDamageBonus;
+                    other.gameObject.GetComponent<EnemyScript>().health -= FindObjectOfType<PlayerScript>().weaponDamageBonus / 1.5f;
                 }
             }
         }

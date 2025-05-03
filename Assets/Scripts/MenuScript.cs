@@ -3,6 +3,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 using TMPro;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
 public class MenuScript : MonoBehaviour
 {
@@ -28,11 +31,25 @@ public class MenuScript : MonoBehaviour
         {
             performanceMode.isOn = false;
         }
+        else
+        {
+            performanceMode.isOn = true;
+        }
         if (PlayerPrefs.GetInt("wonMain") == 1)
         {
             star.SetActive(true);
+            endlessSelections[0].AddOptions(weaponItems);
+            endlessSelections[1].AddOptions(artifactItems);
         }
         endlessWaveNum.text = $"Wave {PlayerPrefs.GetInt("endlessWaves", 0)}";
+        AudioListener.pause = false;
+
+        if (Environment.GetCommandLineArgs().ToList().Contains("-bleh"))
+        {
+            GetComponent<AudioSource>().Stop();
+            GetComponent<AudioSource>().clip = goodMusic;
+            GetComponent<AudioSource>().Play();
+        }
     }
 
     void Update()
@@ -45,6 +62,7 @@ public class MenuScript : MonoBehaviour
             }
         }
     }
+
 
     public void Bye()
     {
@@ -114,6 +132,15 @@ public class MenuScript : MonoBehaviour
         }
     }
 
+    public void SetDropdownThingy(int whichOneMayan)
+    {
+        switch (whichOneMayan)
+        {
+            case 0: PlayerPrefs.SetInt("endlessWeapon", endlessSelections[whichOneMayan].value); break;
+            case 1: PlayerPrefs.SetInt("endlessArtifact", endlessSelections[whichOneMayan].value); break;
+        }
+    }
+
     public Slider[] sliders;
     public string[] slidersValue;
 
@@ -127,4 +154,11 @@ public class MenuScript : MonoBehaviour
 
     public TMP_Text endlessWaveNum;
     public GameObject star;
+
+    public TMP_Dropdown[] endlessSelections;
+
+    public List<string> weaponItems;
+    public List<string> artifactItems;
+
+    public AudioClip goodMusic;
 }

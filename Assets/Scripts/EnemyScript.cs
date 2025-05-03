@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+using TMPro;
 
 public class EnemyScript : MonoBehaviour
 {
@@ -11,6 +13,20 @@ public class EnemyScript : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         if (spawnedByWave)
         {
+            /*if (ws.wave == 15 || ws.wave == 35) 
+            {
+                agent.Warp(new Vector3(0, 5, 120));
+                switch (ws.wave)
+                {
+                    case 15: enemy = validBosses[0]; break;
+                    case 35: enemy = validBosses[1]; break;
+                }
+                bossStuffs[0].SetActive(true); // text
+                bossStuffs[0].GetComponent<TMP_Text>().text = enemy.enemyName.ToUpper();
+                bossStuffs[1].SetActive(true); // slider
+                bossStuffs[1].GetComponent<Slider>().maxValue = enemy.health;
+                return;
+            }*/
             agent.Warp(new Vector3(Random.Range(-135, 135), 5, Random.Range(-135, 135))); // hoping this drops the enemy down to floor height (IT DOES)
             if (ws.wave > 2)
             {
@@ -55,13 +71,12 @@ public class EnemyScript : MonoBehaviour
                 {
                     enemy = validEnemies[0];
                 }
-            }
+            } // sorry
         }
         sr.sprite = enemy.sprite;
         health = enemy.health;
         damage = enemy.damage;
         agent.speed = enemy.speed;
-        chance = enemy.chanceOfDrop;
         if (enemy.enemySpecificGameObjectId != -1)
         {
             Instantiate(specificGO[enemy.enemySpecificGameObjectId], transform).SetActive(true);
@@ -74,7 +89,7 @@ public class EnemyScript : MonoBehaviour
         {
             if (enemy.weaponDrop != null)
             {
-                if (Random.Range(1, chance) == 1)
+                if (Random.Range(1, enemy.chanceOfDrop) == 1)
                 {
                     GameObject wd = Instantiate(weaponPickupOnDeath, transform.position, Quaternion.identity);
                     if (wd.GetComponent<WeaponPickup>() != null)
@@ -86,7 +101,7 @@ public class EnemyScript : MonoBehaviour
             }
             if (enemy.artifactDrop != null)
             {
-                if (Random.Range(1, chance * 12) == 1)
+                if (Random.Range(1, enemy.chanceOfDrop * 12) == 1)
                 {
                     GameObject wd = Instantiate(artifactPickupOnDeath, transform.position, Quaternion.identity);
                     if (wd.GetComponent<ArtifactPickup>() != null)
@@ -96,6 +111,11 @@ public class EnemyScript : MonoBehaviour
                     wd.SetActive(true);
                 }
             }
+            if (enemy.boss)
+            {
+                bossStuffs[0].SetActive(false);
+                bossStuffs[1].SetActive(false);
+            }
             Destroy(gameObject);
         }
         else
@@ -104,7 +124,15 @@ public class EnemyScript : MonoBehaviour
             agent.SetDestination(player.position);
         }
         health += enemy.regen * Time.deltaTime;
-        if (Vector3.Distance(player.position, transform.position) <= 20 && player.GetComponent<PlayerScript>().singing)
+        if (health > enemy.health)
+        {
+            health = enemy.health;
+        }
+        if (ws.wave == 15 || ws.wave == 35)
+        {
+            bossStuffs[1].GetComponent<Slider>().value = health;
+        }
+        if (Vector3.Distance(player.position, transform.position) <= 20 && player.GetComponent<PlayerScript>().singing == 1)
         {
             health -= (10 + enemy.regen) * Time.deltaTime;
         }
@@ -117,7 +145,7 @@ public class EnemyScript : MonoBehaviour
         while (timmer > 0)
         {
             timmer -= Time.deltaTime;
-            health -= 4 * Time.deltaTime;
+            health -= 6 * Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
         if (health > 0)
@@ -146,14 +174,15 @@ public class EnemyScript : MonoBehaviour
     public GameObject weaponPickupOnDeath;
     public GameObject artifactPickupOnDeath;
 
-    public int chance;
-
     public bool spawnedByWave = true;
     public WaveScript ws;
 
     public EnemyScriptable[] validEnemies;
+    public EnemyScriptable[] validBosses;
 
     public GameObject[] specificGO;
 
     public GameObject fire;
+
+    public GameObject[] bossStuffs;
 }

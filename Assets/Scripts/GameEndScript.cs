@@ -29,7 +29,7 @@ public class GameEndScript : MonoBehaviour
             mayan[2].SetActive(true);
         }
 
-        if (PlayerPrefs.GetInt("endless") == 1)
+        if (PlayerPrefs.GetInt("endless") == 1 && PlayerPrefs.GetInt("endlessWaves") <= waave)
         {
             PlayerPrefs.SetInt("endlessWaves", waave);
         }

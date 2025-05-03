@@ -22,8 +22,13 @@ public class PlayerScript : MonoBehaviour
         weaponAud = transform.GetChild(0).GetComponent<AudioSource>();
         hp = 10;
         cameraRotation = cam.transform.rotation.eulerAngles;
-        GetNewWeapon(air); // nothing
-        GetNewArtifact(airtifact);
+        if (PlayerPrefs.GetInt("endless", 0) == 1)
+        {
+            weapon = allWeapons[PlayerPrefs.GetInt("endlessWeapon")];
+            artifact = allArtifacts[PlayerPrefs.GetInt("endlessArtifact")];
+        }
+        GetNewWeapon(weapon); // usually nothing
+        GetNewArtifact(artifact);
     }
 
     void Update()
@@ -44,10 +49,14 @@ public class PlayerScript : MonoBehaviour
         }
         if (hp <= 0)
         {
-            if (artifactEquipped.name == "Cross")
+            if (artifact.name == "Cross")
             {
+                cc.enabled = false;
                 transform.position = new Vector3(0, 10, 0);
-                hp = maxHp / 4; 
+                cc.enabled = true;
+                maxHp = 10;
+                hp = maxHp / 4;
+                mainSpeed = 12;
                 realGravity = 20;
                 jump = true;
                 GetNewArtifact(airtifact);
@@ -89,7 +98,7 @@ public class PlayerScript : MonoBehaviour
 
     void ArtifactUpdate()
     {
-        switch (artifactEquipped.name)
+        switch (artifact.name)
         {
             case "Campfire":
                 Instantiate(artifactGameObjects[0], transform.position, transform.rotation).SetActive(true);
@@ -166,7 +175,7 @@ public class PlayerScript : MonoBehaviour
             speed = mainSpeed * 1.35f;
         }
         speed *= Mathf.Clamp(hp / maxHp, 0.65f, 1);
-        if (artifactEquipped.name == "Nothing")
+        if (artifact.name == "Nothing")
         {
             speed += 0.15f;
         }
@@ -249,8 +258,8 @@ public class PlayerScript : MonoBehaviour
         }
         weaponDurabilitySlider.value = durability;
 
-        artifactImage.sprite = artifactEquipped.sprite;
-        artifactDurabilitySlider.maxValue = artifactEquipped.durability;
+        artifactImage.sprite = artifact.sprite;
+        artifactDurabilitySlider.maxValue = artifact.durability;
         artifactDurabilitySlider.value = artifactDurability;
 
         cooldownSider.value = attackCooldown;
@@ -258,6 +267,10 @@ public class PlayerScript : MonoBehaviour
 
     void GetNewWeapon(Weapon weaponCollect)
     {
+        if (weaponCollect == null)
+        {
+            weaponCollect = air;
+        }
         weapon = weaponCollect;
         durability = weapon.durability + weaponDurabilityBonus;
         if (weapon.name == "Crossbow")
@@ -265,10 +278,14 @@ public class PlayerScript : MonoBehaviour
             durability += weaponDurabilityBonus * 4;
         }
     }
-    void GetNewArtifact(Artifact artifact)
+    void GetNewArtifact(Artifact artifacte)
     {
-        artifactEquipped = artifact;
-        artifactDurability = artifactEquipped.durability + weaponDurabilityBonus;
+        if (artifacte == null)
+        {
+            artifacte = airtifact;
+        }
+        artifact = artifacte;
+        artifactDurability = artifacte.durability + weaponDurabilityBonus;
     }
 
     void Attack()
@@ -277,7 +294,7 @@ public class PlayerScript : MonoBehaviour
 
         if (weapon.name == "Microphone")
         {
-            singing = true;
+            singing = 1;
             Invoke(nameof(NotSinging), 9);
         }
         else if (weapon.name != "Crossbow")
@@ -293,17 +310,20 @@ public class PlayerScript : MonoBehaviour
 
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 3.25f) && hit.transform.gameObject.GetComponent<ProjectileScript>() != null)
         {
-            print("You parried him dhar mann");
-            hit.transform.gameObject.GetComponent<ProjectileScript>().Parry();
-            weaponAud.PlayOneShot(parry[0]);
-            if (Random.Range(1, 28) == 5)
+            if (!hit.transform.gameObject.GetComponent<ProjectileScript>().player)
             {
-                weaponAud.PlayOneShot(parry[1]);
-            }
-            durability -= 2;
-            if (durability <= 0)
-            {
-                GetNewWeapon(air);  
+                print("You parried him dhar mann");
+                hit.transform.gameObject.GetComponent<ProjectileScript>().Parry();
+                weaponAud.PlayOneShot(parry[0]);
+                if (Random.Range(1, 28) == 5)
+                {
+                    weaponAud.PlayOneShot(parry[1]);
+                }
+                durability -= 2;
+                if (durability <= 0)
+                {
+                    GetNewWeapon(air);
+                }
             }
         }
         if (!weapon.ranged)
@@ -313,7 +333,7 @@ public class PlayerScript : MonoBehaviour
                 print("i hit him dhar mann");
                 hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(weapon.damage + weaponDamageBonus);
                 weaponAud.PlayOneShot(impact);
-                if (artifactEquipped.name == "Bloodthirst Spike")
+                if (artifact.name == "Bloodthirst Spike")
                 {
                     hp += Mathf.RoundToInt((weapon.damage + weaponDamageBonus) / 5);
                     if (Random.Range(1, 10) == 4)
@@ -322,12 +342,12 @@ public class PlayerScript : MonoBehaviour
                     }
                     artifactDurability--;
                 }
-                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.enemyName == artifactEquipped.enemyEffective)
+                if (hit.transform.gameObject.GetComponent<EnemyScript>().enemy.enemyName == artifact.enemyEffective)
                 {
                     hit.transform.gameObject.GetComponent<EnemyScript>().health -= Mathf.RoundToInt(9 + weaponDamageBonus);
                     artifactDurability--;
                 }
-                if (artifactEquipped.name == "Lighter")
+                if (artifact.name == "Lighter")
                 {
                     StartCoroutine(hit.transform.gameObject.GetComponent<EnemyScript>().Fire(Random.Range(6, 14)));
                     artifactDurability--;
@@ -370,7 +390,7 @@ public class PlayerScript : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.transform.name == "Enemy(Clone)")
+        if (other.transform.name == "Enemy(Clone)" && other.gameObject.GetComponent<EnemyScript>() != null)
         {
             hp -= other.gameObject.GetComponent<EnemyScript>().damage * Time.deltaTime;
         }
@@ -386,14 +406,25 @@ public class PlayerScript : MonoBehaviour
 
     void NotSinging()
     {
-        singing = false;
+        singing = 0;
     }
 
     public IEnumerator Cobweb()
     {
-        mainSpeed /= 1.3f;
-        yield return new WaitForSeconds(2);
-        mainSpeed *= 1.3004f;
+        if (artifact.name != "Cobweb")
+        {
+            mainSpeed /= 1.3f;
+            yield return new WaitForSeconds(2);
+            mainSpeed *= 1.3004f;
+        }
+    }
+
+    public void Stop()
+    {
+        playerEnding = GameObject.Find("PlayerEnding");
+        GetComponent<SpriteRenderer>().enabled = false;
+        playerEnding.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        Destroy(gameObject); // NOOOOOOO
     }
 
     CharacterController cc;
@@ -420,6 +451,7 @@ public class PlayerScript : MonoBehaviour
     public float hp;
     public float regen;
     public Weapon weapon;
+    public Artifact artifact;
 
     public Slider healthSlider;
     public Image healthImage;
@@ -446,12 +478,11 @@ public class PlayerScript : MonoBehaviour
     public int weaponDamageBonus;
     public int weaponDurabilityBonus;
 
-    public Artifact artifactEquipped;
     public Image artifactImage;
     public Slider artifactDurabilitySlider;
     float cobwebCooldown;
 
-    public bool singing;
+    public int singing;
 
     public Slider cooldownSider;
 
@@ -471,4 +502,9 @@ public class PlayerScript : MonoBehaviour
     public AudioClip impact;
     public AudioClip[] parry;
     public AudioClip[] crossbow;
+
+    public Weapon[] allWeapons;
+    public Artifact[] allArtifacts;
+
+    public GameObject playerEnding;
 }
