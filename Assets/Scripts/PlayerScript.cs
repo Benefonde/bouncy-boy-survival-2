@@ -141,6 +141,7 @@ public class PlayerScript : MonoBehaviour
             {
                 mouseRotation = new Vector2(Input.GetAxis("Mouse Y"), -Input.GetAxis("Mouse X"));
                 cameraRotation += -mouseRotation * mouseSensitivity;
+                cameraRotation = new Vector2(Mathf.Clamp(cameraRotation.x, -80, 80), cameraRotation.y);
                 cam.transform.rotation = Quaternion.Euler(cameraRotation);
                 cam.transform.position = transform.position + cameraOffset;
                 arealight.position = cam.transform.position;
